@@ -6,6 +6,8 @@ We developed a cost-effective method named Circular Nucleic acid Enrichment Reag
 
 ## Data analyses
 * mtb_fq2counts.sh:
-  This bash scripts processes paired-end sequencing data and creates a summary file. Takes raw fastq files, trims adapters using Cutadapt (https://cutadapt.readthedocs.io/en/stable/). Removes low complexity reads from merged and unmerged reads using prinseq (https://github.com/uwb-linux/prinseq). Maps merged reads as SE and unmereged read-pairs as PE mode using bwa aln (http://bio-bwa.sourceforge.net/bwa.shtml). Bam files merged, sorted and indexed using samtools (http://www.htslib.org/doc/samtools.html). Duplicates marked and removed using Picard MarkDuplicates (https://broadinstitute.github.io/picard/). Individual SNP coverage depth and coverage around the SNP region are collected using bedtools (https://bedtools.readthedocs.io/en/latest/index.html).
+  This bash scripts processes paired-end sequencing data and creates a summary file. Takes raw fastq files, trims adapters using Cutadapt (https://cutadapt.readthedocs.io/en/stable/). Maps reads as PE mode using bwa mem (http://bio-bwa.sourceforge.net/bwa.shtml) to M. tuberculosis H37Rv reference genome (NC_000962.3). Bam files merged, duplicates removed, sorted and indexed using samtools (http://www.htslib.org/doc/samtools.html). Mapped read are counted using samtools stats and genome coverage deteremined using bedtools (https://bedtools.readthedocs.io/en/latest/index.html).
 
-M. tuberculosis H37Rv reference genome (NC_000962.3) 
+*mtb_100bp_cov_multiSamp_corr.py:
+This python script is used to make Figures S3, S9-11. Takes 100bp raw coverage tsvs for multiple samples as comma separated list to make correlation matrix of normalized coverage across 100bp bins of the H37Rv reference genome. 
+
