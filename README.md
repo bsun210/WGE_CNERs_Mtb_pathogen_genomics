@@ -14,5 +14,6 @@ This bash scripts processes paired-end sequencing data and creates a summary fil
 This python script is used to make Figures S3, S9-11. Takes 100bp raw coverage tsvs for multiple samples as comma separated list to make correlation matrix of normalized coverage across 100bp bins of the H37Rv reference genome. 
 
 *mtb_genomCov.py:
+
 This python script is used to make Figures 2A, B, S8. Takes a tsv with genome coverage at each base for multiple samples (10000, 1000, 100 copy capture experiments) and plots histogram of cumulative genome coverage.  
 
