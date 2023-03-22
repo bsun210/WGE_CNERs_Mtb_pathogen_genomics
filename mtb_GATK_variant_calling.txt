@@ -1,0 +1,60 @@
+#BASH commands used for variant calling on WGS and WGE data using GATK Haplotype caller:
+#For 10000 copy captures:
+for s in B092822TC43_B062822TC143 B092822TC43_B062822TC243 B092822TC43_B062822TC343 B092822TC43_B062822TC443 B092822TC43_B062822TC543; do ../../bin/gatk-4.2.6.1/gatk HaplotypeCaller -ERC GVCF -I ../B220927_postCap_deep/$s/$s.RG.bam -R ../../refs/mtb/GCF_000195955.2_ASM19595v2_genomic.fna -O $s.gatk_HapCall.vcf -ploidy 1; done
+
+for s in B062222TB4_B061222TB41 B062222TB5_B061222TB51; do PicardCommandLine AddOrReplaceReadGroups -I ./B220622_postCap_titration/B220622_TB4567_deep/$s/$s.sub.rd.s.q20.bam -O ./B220622_postCap_titration/B220622_TB4567_deep/$s/$s.RG.bam -RGID $s -RGLB $s -RGPL illumina -RGPU NNNNNN -RGSM $s -VALIDATION_STRINGENCY SILENT; samtools index ./B220622_postCap_titration/B220622_TB4567_deep/$s/$s.RG.bam; done
+
+for s in B062222TB4_B061222TB41 B062222TB5_B061222TB51; do ../../bin/gatk-4.2.6.1/gatk HaplotypeCaller -ERC GVCF -I ../B220622_postCap_titration/B220622_TB4567_deep/$s/$s.RG.bam -R ../../refs/mtb/GCF_000195955.2_ASM19595v2_genomic.fna -O $s.gatk_HapCall.vcf -ploidy 1; done
+
+../../bin/gatk-4.2.6.1/gatk CombineGVCFs -V B062222TB4_B061222TB41.gatk_HapCall.vcf -V B092822TC43_B062822TC143.gatk_HapCall.vcf -V B092822TC43_B062822TC243.gatk_HapCall.vcf -V B092822TC43_B062822TC343.gatk_HapCall.vcf -V B092822TC43_B062822TC443.gatk_HapCall.vcf -V B092822TC43_B062822TC543.gatk_HapCall.vcf -R ../../refs/mtb/GCF_000195955.2_ASM19595v2_genomic.fna -O WGE1e4_gatk_HapCall.gvcf
+##Processed 252111 total variants in 0.2 minutes.
+
+../../bin/gatk-4.2.6.1/gatk GenotypeGVCFs -V WGE1e4_gatk_HapCall.gvcf -R ../../refs/mtb/GCF_000195955.2_ASM19595v2_genomic.fna -O WGE1e4_raw.vcf
+##Processed 187629 total variants in 0.3 minutes.
+
+vcftools --vcf WGE1e4_raw.vcf --out WGE1e4_filtered --remove-indels --minDP 5 --recode 
+##After filtering, kept 5416 out of a possible 6096 Sites
+
+bgzip WGE1e4_filtered.recode.vcf
+bcftools index WGE1e4_filtered.recode.vcf.gz
+bcftools reheader -s ./hapCall_junk/mtbc_deepSub_names.txt -o WGE1e4_final.vcf.gz WGE1e4_filtered.recode.vcf.gz
+bcftools index WGE1e4_final.vcf.gz
+
+#For 1000 copy captures:
+../../bin/gatk-4.2.6.1/gatk CombineGVCFs -V B062222TB5_B061222TB51.gatk_HapCall.vcf -V B092822TC53_B062822TC153.gatk_HapCall.vcf -V B092822TC53_B062822TC253.gatk_HapCall.vcf -V B092822TC53_B062822TC353.gatk_HapCall.vcf -V B092822TC53_B062822TC453.gatk_HapCall.vcf -V B092822TC53_B062822TC553.gatk_HapCall.vcf -R ../../refs/mtb/GCF_000195955.2_ASM19595v2_genomic.fna -O WGE1e3_gatk_HapCall.gvcf
+##Processed 2133718 total variants in 1.3 minutes.
+
+../../bin/gatk-4.2.6.1/gatk GenotypeGVCFs -V WGE1e3_gatk_HapCall.gvcf -R ../../refs/mtb/GCF_000195955.2_ASM19595v2_genomic.fna -O WGE1e3_raw.vcf
+##Processed 1618020 total variants in 1.0 minutes.
+
+vcftools --vcf WGE1e3_raw.vcf --out WGE1e3_filtered --remove-indels --minDP 5 --recode 
+##After filtering, kept 4188 out of a possible 4634 Sites
+
+bgzip WGE1e3_filtered.recode.vcf
+bcftools index WGE1e3_filtered.recode.vcf.gz
+bcftools reheader -s ./hapCall_junk/mtbc_deepSub_names.txt -o WGE1e3_final.vcf.gz WGE1e3_filtered.recode.vcf.gz
+bcftools index WGE1e3_final.vcf.gz
+
+For WGS::
+../../bin/gatk-4.2.6.1/gatk CombineGVCFs -V B230123TB1_Mtbh37Rv.gatk_HapCall.vcf -V B230123TB2_MtbL1.gatk_HapCall.vcf -V B230123TB3_MtbL4.gatk_HapCall.vcf -V B230123TB4_MtbL2.gatk_HapCall.vcf -V B230123TB5_MtbL3.gatk_HapCall.vcf -V B230123TB6_Mbovis.gatk_HapCall.vcf -R ../../refs/mtb/GCF_000195955.2_ASM19595v2_genomic.fna -O WGS_gatk_HapCall.gvcf
+##Processed 39443 total variants in 0.1 minutes.
+
+../../bin/gatk-4.2.6.1/gatk GenotypeGVCFs -V WGS_gatk_HapCall.gvcf -R ../../refs/mtb/GCF_000195955.2_ASM19595v2_genomic.fna -O WGS_raw.vcf
+##Processed 32230 total variants in 0.1 minutes.
+
+vcftools --vcf WGS_raw.vcf --out WGS_filtered --remove-indels --minDP 5 --recode
+##After filtering, kept 5444 out of a possible 6167 Sites
+
+bgzip WGS_filtered.recode.vcf
+bcftools index WGS_filtered.recode.vcf.gz
+bcftools reheader -s ./hapCall_junk/mtbc_deepSub_names.txt -o WGS_final.vcf.gz WGS_filtered.recode.vcf.gz
+bcftools index WGS_final.vcf.gz
+
+bcftools stats -s Mtb_H37Rv,MTBC_L1,MTBC_L4,MTBC_L2,MTBC_L3,Mbovis WGS_final.vcf.gzz WGE1e4_final.vcf.gz > WGS_WGE1e4_final.vchk
+
+bcftools stats -s Mtb_H37Rv,MTBC_L1,MTBC_L4,MTBC_L2,MTBC_L3,Mbovis WGS_final.vcf.gz WGE1e3_final.vcf.gz > WGS_WGE1e3_final.vchk
+
+bcftools stats -s Mtb_H37Rv,MTBC_L1,MTBC_L4,MTBC_L2,MTBC_L3,Mbovis WGE1e4_final.vcf.gz WGE1e3_final.vcf.gz > WGE1e4_WGE1e3_final.vchk
+
+bcftools stats -R ../../refs/mtb/tbdb_drug_resist_genes.bed -s Mtb_H37Rv,MTBC_L1,MTBC_L4,MTBC_L2,MTBC_L3,Mbovis WGS_final.vcf.gz WGE1e4_final.vcf.gz > WGS_WGE1e4_final_drugGenes.vchk
+
